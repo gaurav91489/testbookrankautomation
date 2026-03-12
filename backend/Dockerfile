@@ -25,10 +25,7 @@ COPY . .
 RUN mkdir -p downloads
 
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
 # Tell the app it's in a Docker environment
 ENV DOCKER_CONTAINER=true
-
 EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "main.py"]
