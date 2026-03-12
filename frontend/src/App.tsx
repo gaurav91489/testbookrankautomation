@@ -3,7 +3,8 @@ import { Search, Download, Play, CheckCircle2, AlertCircle, Loader2, Globe } fro
 import axios from 'axios'
 import './App.css'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL_RAW = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE = API_URL_RAW.endsWith('/') ? API_URL_RAW.slice(0, -1) : API_URL_RAW
 
 interface Result {
   phrase: string

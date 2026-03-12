@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urlparse
 import csv
 import time
@@ -27,21 +26,22 @@ def run_rank_tracker(search_engines, search_phrases, target_domain):
     is_docker = os.path.exists('/.dockerenv') or os.environ.get('DOCKER_CONTAINER') == 'true'
     
     if is_docker:
-        print("Running in Docker - Using Headless Mode")
+        print("Running in Docker - Using System Chromium")
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        # Let Selenium 4 find the system chrome/driver automatically
+        chrome_options.binary_location = "/usr/bin/chromium"
+        service = Service(executable_path="/usr/bin/chromedriver")
+        driver = webdriver.Chrome(service=service, options=chrome_options)
     else:
         print("Running Locally - Using Headed Mode")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
-
+        # On local Windows, we let Selenium 4 find/download the driver automatically
+        driver = webdriver.Chrome(options=chrome_options)
+    
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    
-    # Use Selenium 4's built-in manager (no need for ChromeDriverManager)
-    driver = webdriver.Chrome(options=chrome_options)
     
     # Normalize target domain
     characters_to_clear = ["http://", "https://", "www."]
